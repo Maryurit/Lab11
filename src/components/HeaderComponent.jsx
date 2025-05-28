@@ -15,7 +15,7 @@ function HeaderComponent() {
                             <NavLink className="nav-link" to="/home">Inicio</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/categories">Peliculas</NavLink>
+                            <NavLink className="nav-link" to="/categories">Categorias</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/series">Series</NavLink>
