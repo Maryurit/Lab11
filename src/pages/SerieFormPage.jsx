@@ -6,6 +6,7 @@ function SerieFormPage() {
     const { idserie } = useParams();
     const navigate = useNavigate();
     const isEdit = Boolean(idserie);
+    const [categories, setCategories] = useState([]);
 
     const defaultSeries = [
         { cod: 1, nom: "Friends", cat: "Comedy", img: "friends.png" },
@@ -23,6 +24,9 @@ function SerieFormPage() {
     });
 
     useEffect(() => {
+
+        const savedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+        setCategories(savedCategories);
         const savedSeries = JSON.parse(localStorage.getItem("series"));
         if (!savedSeries || savedSeries.length === 0) {
             localStorage.setItem("series", JSON.stringify(defaultSeries));
@@ -120,10 +124,9 @@ function SerieFormPage() {
                                 onChange={onChangeCategoria}
                             >
                                 <option value="">Seleccione una categoría</option>
-                                <option value="Horror">Horror</option>
-                                <option value="Comedy">Comedy</option>
-                                <option value="Action">Action</option>
-                                <option value="Drama">Drama</option>
+                                {categories.map(cat => (
+                                    <option key={cat.cod} value={cat.nom}>{cat.nom}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
