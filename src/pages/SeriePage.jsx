@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HeaderComponent from "../components/HeaderComponent";
 
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 function SeriePage() {
   const [series, setSeries] = useState([]);
@@ -55,13 +55,16 @@ function SeriePage() {
   // Exportar a PDF con jsPDF y autotable
   const exportToPDF = () => {
   const doc = new jsPDF();
-
   doc.text("Lista de Series", 14, 15);
 
   const tableColumn = ["Código", "Nombre", "Categoría"];
-  const tableRows = series.map(serie => [serie.cod, serie.nom, serie.cat]);
+  const tableRows = series.map((serie) => [
+    serie.cod,
+    serie.nom,
+    serie.cat,
+  ]);
 
-  doc.autoTable({
+  autoTable(doc, {
     head: [tableColumn],
     body: tableRows,
     startY: 20,
@@ -69,6 +72,7 @@ function SeriePage() {
 
   doc.save("series.pdf");
 };
+
 
   return (
     <>
