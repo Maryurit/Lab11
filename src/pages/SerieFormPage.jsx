@@ -5,6 +5,16 @@ import HeaderComponent from "../components/HeaderComponent";
 function SerieFormPage() {
     const { idserie } = useParams();
     const navigate = useNavigate();
+    const isEdit = Boolean(idserie);
+
+    const defaultSeries = [
+        { cod: 1, nom: "Friends", cat: "Comedy", img: "friends.png" },
+        { cod: 2, nom: "Law & Order", cat: "Drama", img: "law-and-order.png" },
+        { cod: 3, nom: "The Big Bang Theory", cat: "Comedy", img: "the-big-bang-theory.png" },
+        { cod: 4, nom: "Stranger Things", cat: "Horror", img: "stranger-things.png" },
+        { cod: 5, nom: "Dr. House", cat: "Drama", img: "dr-house.png" },
+        { cod: 6, nom: "The X-Files", cat: "Drama", img: "the-x-files.png" }
+    ];
 
     const [data, setData] = useState({
         nom: "",
@@ -12,19 +22,15 @@ function SerieFormPage() {
         img: ""
     });
 
-    // Lista de series "dummy" para simular datos existentes
-    const series = [
-        { cod: 1, nom: "Friends", cat: "Comedy", img: "friends.png" },
-        { cod: 2, nom: "Law & Order", cat: "Drama", img: "law-and-order.png" },
-        { cod: 3, nom: "The Big Bang Theory", cat: "Comedy", img: "the-big-bang-theory.png" },
-        { cod: 4, nom: "Stranger Things", cat: "Horror", img: "stranger-things.png" },
-        { cod: 5, nom: "Dr. House", cat: "Drama", img: "dr-house.png" },
-        { cod: 6, nom: "The X-Files", cat: "Drama", img: "the-x-files.png" },
-    ];
-
     useEffect(() => {
-        if (idserie) {
-            const found = series.find(s => s.cod === parseInt(idserie));
+        const savedSeries = JSON.parse(localStorage.getItem("series"));
+        if (!savedSeries || savedSeries.length === 0) {
+            localStorage.setItem("series", JSON.stringify(defaultSeries));
+        }
+
+        if (isEdit) {
+            const currentSeries = JSON.parse(localStorage.getItem("series")) || defaultSeries;
+            const found = currentSeries.find(s => s.cod === parseInt(idserie));
             if (found) {
                 setData({
                     nom: found.nom,
@@ -45,16 +51,32 @@ function SerieFormPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Datos enviados:", data);
+        
+        let savedSeries = JSON.parse(localStorage.getItem("series")) || defaultSeries;
+        
+        if (isEdit) {
+            const updatedSeries = savedSeries.map(serie =>
+                serie.cod === parseInt(idserie) ? { ...serie, ...data } : serie
+            );
+            localStorage.setItem("series", JSON.stringify(updatedSeries));
+        } else {
+            // Crear nueva serie
+            const newCod = savedSeries.length > 0 ? Math.max(...savedSeries.map(s => s.cod)) + 1 : 1;
+            const newSerie = { cod: newCod, ...data };
+            const updatedSeries = [...savedSeries, newSerie];
+            localStorage.setItem("series", JSON.stringify(updatedSeries));
+        }
+        
         navigate("/series");
     };
 
+    // Resto del código del componente (igual que antes)
     return (
         <>
             <HeaderComponent />
             <div className="container mt-3">
                 <div className="d-flex justify-content-between border-bottom pb-3 mb-3">
-                    <h3>{idserie ? "Editar" : "Nueva"} Serie</h3>
+                    <h3>{isEdit ? "Editar" : "Nueva"} Serie</h3>
                     <div>
                         <button onClick={() => navigate("/series")} className="btn btn-secondary me-2">Cancelar</button>
                         <button type="submit" className="btn btn-primary" form="serieForm">Guardar</button>
@@ -112,4 +134,3 @@ function SerieFormPage() {
 }
 
 export default SerieFormPage;
-

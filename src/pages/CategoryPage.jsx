@@ -1,36 +1,33 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import HeaderComponent from "../components/HeaderComponent";
 
 function CategoryPage() {
-    const navigate = useNavigate();
-
-    const defaultCategories = [
-        { cod: 1, nom: "Horror" },
-        { cod: 2, nom: "Comedy" },
-        { cod: 3, nom: "Action" },
-        { cod: 4, nom: "Drama" }
-    ];
-
     const [categories, setCategories] = useState([]);
 
+    // Inicializar categorías
     useEffect(() => {
-        const saved = JSON.parse(localStorage.getItem("categories"));
-        if (saved && saved.length > 0) {
-            setCategories(saved);
-        } else {
-            setCategories(defaultCategories);
+        const savedCategories = JSON.parse(localStorage.getItem("categories"));
+        
+        // Si no hay categorías guardadas, inicializar con las por defecto
+        if (!savedCategories || savedCategories.length === 0) {
+            const defaultCategories = [
+                { cod: 1, nom: "Horror" },
+                { cod: 2, nom: "Comedy" },
+                { cod: 3, nom: "Action" },
+                { cod: 4, nom: "Drama" }
+            ];
             localStorage.setItem("categories", JSON.stringify(defaultCategories));
+            setCategories(defaultCategories);
+        } else {
+            setCategories(savedCategories);
         }
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem("categories", JSON.stringify(categories));
-    }, [categories]);
-
-    const handleDelete = (id) => {
-        const updated = categories.filter(cat => cat.cod !== id);
-        setCategories(updated);
+    const handleDelete = (cod) => {
+        const updatedCategories = categories.filter(cat => cat.cod !== cod);
+        localStorage.setItem("categories", JSON.stringify(updatedCategories));
+        setCategories(updatedCategories);
     };
 
     return (
@@ -39,47 +36,38 @@ function CategoryPage() {
             <div className="container mt-3">
                 <div className="d-flex justify-content-between border-bottom pb-3 mb-3">
                     <h3>Categorías</h3>
-                    <button
-                        onClick={() => navigate('/categories/new')}
-                        className="btn btn-primary"
-                    >
-                        Nueva Categoría
-                    </button>
+                    <Link to="/categories/new" className="btn btn-primary">Nueva Categoría</Link>
                 </div>
-                <table className="table table-hover">
-                    <thead className="table-light">
+                
+                <table className="table table-striped">
+                    <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th className="text-center" style={{ width: "150px" }}>Acciones</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {categories.map((item) => (
-                            <tr key={item.cod}>
-                                <td>{item.cod}</td>
-                                <td>{item.nom}</td>
-                                <td className="text-center">
-                                    <button
-                                        onClick={() => navigate(`/categories/edit/${item.cod}`)}
-                                        className="btn btn-sm btn-outline-primary me-2"
+                        {categories.map(cat => (
+                            <tr key={cat.cod}>
+                                <td>{cat.cod}</td>
+                                <td>{cat.nom}</td>
+                                <td>
+                                    <Link 
+                                        to={`/categories/edit/${cat.cod}`} 
+                                        className="btn btn-sm btn-warning me-2"
                                     >
-                                        <i className="bi bi-pencil-square"></i> Editar
-                                    </button>
+                                        Editar
+                                    </Link>
                                     <button
-                                        onClick={() => handleDelete(item.cod)}
-                                        className="btn btn-sm btn-outline-danger"
+                                        onClick={() => handleDelete(cat.cod)}
+                                        className="btn btn-sm btn-danger"
                                     >
-                                        <i className="bi bi-trash"></i> Eliminar
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>
                         ))}
-                        {categories.length === 0 && (
-                            <tr>
-                                <td colSpan="3" className="text-center">No hay categorías registradas.</td>
-                            </tr>
-                        )}
                     </tbody>
                 </table>
             </div>
@@ -88,4 +76,3 @@ function CategoryPage() {
 }
 
 export default CategoryPage;
-
