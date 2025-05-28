@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 
+
 function CategoryFormPage() {
   const navigate = useNavigate();
   const { idcategory } = useParams();
